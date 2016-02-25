@@ -16,7 +16,7 @@ class mesh():
 
 		min = 0
 		for i in range(len(dist)):
-			if (dist[i] > 0 and ((dist[i] < dist[min]) or dist[min] < 0) ):
+			if (dist[i][0] > 0 and ((dist[i][0] < dist[min][0]) or dist[min][0] < 0) ):
 				min = i
 		return dist[min]
 		
@@ -25,15 +25,13 @@ class triangle():
 		self.p1 = point(floats[0:3])
 		self.p2 = point(floats[3:6])
 		self.p3 = point(floats[6:9])
+		self.plane = plane(self)
 
 	def test_collision(self, ray):
-		tr_plane = plane(self)
-		if (tr_plane.h.skalar(ray.direction) == 0):
+		if (self.plane.h.skalar(ray.direction) == 0):
 			return 0
 
-		t = skalarp(tr_plane.d.diff(ray.start), tr_plane.h) / tr_plane.h.skalar(ray.direction)
-#		t = (tr_plane.dk-tr_plane.a*ray.start.x - tr_plane.b*ray.start.y - tr_plane.c*ray.start.z)/(tr_plane.a * ray.direction.x + tr_plane.b * ray.direction.y + tr_plane.c * ray.direction.z)
-
+		t = skalarp(self.plane.d.diff(ray.start), self.plane.h) / self.plane.h.skalar(ray.direction)
 		S = ray.point(t)
 		rs = vector(self.p1, S)
 		a = vector(self.p1, self.p2)
@@ -48,9 +46,9 @@ class triangle():
 
 
 		if (s <= 1 and r <= 1 and (r + s) <= 1 and r >= 0 and s >= 0):
-			return t
+			return (t, S, self)
 		else:
-			return -1
+			return (-1, point(), self)
 
 
 class tripel():
@@ -84,7 +82,7 @@ class tripel():
 		diff.z = self.z - trip.z
 		return diff
 
-	def abs(self)
+	def abs(self):
 		abs = (self.x**2 + self.y**2 + self.z**2)**0.5
 		return abs
 
@@ -99,9 +97,9 @@ class point(tripel):
 	pass
 
 class vector(tripel):
-	def __init__(self, p1 = point(), p2 = point()): #broken
+	def __init__(self, p1 = point(), p2 = point()):
 		tripel.__init__(self)
-		self.add(p2)  #bloody
+		self.add(p2)
 		self.sub(p1)
 		self.opcls = vector
 		
@@ -123,7 +121,6 @@ class ray():
 	def __init__(self, p1 = point([0,0,0]), p2 = point([0,0,0,])):
 		self.start = p1
 		self.direction = vector(p1, p2)
-		#self.direction.sub(p1)
 
 	def point(self, t):
 		return self.start.sum(self.direction.mult(t))
@@ -135,7 +132,7 @@ class ray():
 
 class plane():
 	def __init__(self, triangle):
-		self.d = vector(point([0,0,0]),  triangle.p1) # init mit nur p1 falsch
+		self.d = vector(point([0,0,0]),  triangle.p1)
 		ab = vector(triangle.p1, triangle.p2)
 		ac = vector(triangle.p1, triangle.p3)
 		self.h = ab.kreuz(ac)
