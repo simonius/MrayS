@@ -3,14 +3,33 @@ import sys
 import os
 from PIL import Image
 
-if (len(sys.argv) < 4):
+
+opts = []
+args = []
+pypy = 0
+
+for clarg in sys.argv:
+	if (clarg[0] == '-'):
+		opts.append(clarg)
+	else:
+		args.append(clarg)
+
+if (len(args) < 4):
+	print("to few arguments")
 	quit()
 
-x = int(sys.argv[2])
-y = int(sys.argv[3])
-file = sys.argv[1]
+if (len(opts) > 0):
+	if (opts[0] == "-pypy"):
+		pypy = 1
 
-os.system("pypy render.py " + file + " " + str(x) + " " + str(y))
+x = int(args[2])
+y = int(args[3])
+file = args[1]
+
+if (pypy == 1):
+	os.system("pypy render.py " + file + " " + str(x) + " " + str(y))
+else:
+	os.system("./render.py " + file + " " + str(x) + " " + str(y))
 
 img = Image.new('RGB', (x, y), "black")
 pixels = img.load()

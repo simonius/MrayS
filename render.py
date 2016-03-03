@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import poly
 import sys
 import pickle
