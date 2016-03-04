@@ -63,8 +63,4 @@ def render(mesh, x_pix, y_pix):
 	return lines
 
 pic = render(mesh, x_pix, y_pix)
-for y in range(len(pic)):
-	for x in range(len(pic[y])):
-		clr = (pic[y])[x]
-
 pickle.dump(pic, open(file+".MrayS", "wb"))
